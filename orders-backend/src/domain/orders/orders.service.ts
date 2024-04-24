@@ -4,7 +4,6 @@ import config from "../../config/config";
 import { createError } from "../../common/createError";
 
 import {
-  CreateOrderModel,
   CreateOrderRequest,
   CreateOrderResponse,
 } from "./orders.model";
@@ -14,14 +13,14 @@ const create = async (
   connection: PoolConnection,
   createOrderRequest: CreateOrderRequest
 ): Promise<CreateOrderResponse> => {
-  const { movie_id, show_time, seat_id, user_id } = createOrderRequest;
+  const { user_id, product_id, quantity } = createOrderRequest;
 
 
-  const createOrderModel: CreateOrderModel = {
-    screening_id: "1",
-    seat_id: seat_id,
-    user_id: user_id,
-  };
+  const createOrderModel: CreateOrderRequest = {
+    product_id: 1,
+    quantity: 2,
+    user_id: 1
+  }
 
   const orderId = await ordersRepository.create(connection, createOrderModel);
 
