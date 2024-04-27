@@ -23,7 +23,7 @@ app.use(
   OpenApiValidator.middleware({
     apiSpec,
     validateRequests: true, // (default)
-    validateResponses: true, // false by default
+    validateResponses: false, // false by default
   }),
 );
 app.use('/spec', express.static(apiSpec));

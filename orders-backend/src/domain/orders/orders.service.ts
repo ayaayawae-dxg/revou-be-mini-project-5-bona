@@ -15,14 +15,7 @@ const create = async (
 ): Promise<CreateOrderResponse> => {
   const { user_id, product_id, quantity } = createOrderRequest;
 
-
-  const createOrderModel: CreateOrderRequest = {
-    product_id: 1,
-    quantity: 2,
-    user_id: 1
-  }
-
-  const orderId = await ordersRepository.create(connection, createOrderModel);
+  const orderId = await ordersRepository.create(connection, createOrderRequest);
 
   return orderId;
 };

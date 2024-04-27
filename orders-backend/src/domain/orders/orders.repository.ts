@@ -5,22 +5,16 @@ import { createError } from "../../common/createError";
 import { CreateOrderRequest, CreateOrderResponse } from "../orders/orders.model";
 import { randomUUID } from "crypto";
 
-const create = async (connection: PoolConnection, createOrder: CreateOrderRequest): Promise<CreateOrderResponse> => {
+const create = async (connection: PoolConnection, createOrderRequest: CreateOrderRequest): Promise<CreateOrderResponse> => {
   const id = randomUUID();
-  // const queryCreateOrders = `
-  //   INSERT INTO orders (id, user_id, screening_id, status) 
-  //   VALUES ("${id}", "${createOrder.user_id}", "${createOrder.screening_id}", "READY");
-  // `;
-  // const [rows] = await connection.query<ResultSetHeader>(queryCreateOrders);
+  const { product_id, quantity, user_id } = createOrderRequest;
 
-  // if (rows.affectedRows > 0) {
-  //   const queryCreateOrdersDetail = `INSERT INTO orders_detail (order_id, seat_id) VALUES ?;`;
-  //   const valueCreateOrdersDetail = createOrder.seat_id.map((seatId) => {
-  //     return [id, seatId];
-  //   });
-  //   await connection.query<ResultSetHeader>(queryCreateOrdersDetail, [valueCreateOrdersDetail]);
-  // }
-
+  const query = `
+    INSERT INTO orders (id, user_id, product_id, quantity) 
+    VALUES ("${id}", ${user_id}, ${product_id}, ${quantity});
+  `;
+  const [rows] = await connection.query<ResultSetHeader>(query);
+  
   return { id };
 };
 
