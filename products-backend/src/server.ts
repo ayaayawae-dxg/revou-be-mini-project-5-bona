@@ -9,7 +9,8 @@ import log from "./middleware/log";
 import { errorRes } from "./common/response";
 import config from "./config/config";
 import { checkDb } from "./database/dbUtils";
-import { connectQueue } from "./messaging/rabbitmq/rabbitmqConnection";
+import { connectRabbitQueue } from "./messaging/rabbitmq/rabbitmqConnection";
+import consumers from "./messaging/rabbitmq/consumers";
 
 const app = express();
 const apiSpec = path.join(__dirname, "../api.yaml");
@@ -35,10 +36,10 @@ app.use(errorRes);
 const start = async () => {
   try {
     await checkDb();
-    await connectQueue();
+    await connectRabbitQueue().then(consumers);
 
     app.listen(config.port as number, config.host, () => {
-      console.log(`Orders service is running on ${config.host}:${config.port}`);
+      console.log(`Products service is running on ${config.host}:${config.port}`);
     });
   } catch (error) {
     console.log(error);
