@@ -5,6 +5,7 @@ import auth from "../../middleware/auth";
 
 const router = Router();
 
-router.post("/", auth, ordersController.create);
+// router.post("/", auth, ordersController.create);
+router.post("/", ordersController.create);
 
 export default router;

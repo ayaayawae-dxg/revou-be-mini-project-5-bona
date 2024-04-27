@@ -1,6 +1,5 @@
 import "dotenv/config";
 import express from "express";
-import { RowDataPacket } from "mysql2";
 import * as OpenApiValidator from "express-openapi-validator";
 import path from "path";
 import cors from "cors";
@@ -8,13 +7,14 @@ import cors from "cors";
 import routes from "./routes";
 import log from "./middleware/log";
 import { errorRes } from "./common/response";
-import pool from "./config/db";
 import config from "./config/config";
+import { checkDb } from "./database/dbUtils";
+import { connectQueue } from "./messaging/rabbitmq/rabbitmqConnection";
 
 const app = express();
-const apiSpec = path.join(__dirname, '../api.yaml');
+const apiSpec = path.join(__dirname, "../api.yaml");
 
-app.use(cors())
+app.use(cors());
 app.use(express.json());
 app.use(express.text());
 app.use(express.urlencoded({ extended: false }));
@@ -24,26 +24,18 @@ app.use(
     apiSpec,
     validateRequests: true, // (default)
     validateResponses: false, // false by default
-  }),
+  })
 );
-app.use('/spec', express.static(apiSpec));
+app.use("/spec", express.static(apiSpec));
 
 app.use("/", routes);
 
 app.use(errorRes);
 
-const checkDb = async () => {
-  const [rows] = await pool.query<RowDataPacket[]>("select @@version");
-  if (rows.length > 0) {
-    console.log(`Database connected successfully`);
-  } else {
-    throw new Error("Failed to connect Database");
-  }
-};
-
 const start = async () => {
   try {
     await checkDb();
+    await connectQueue();
 
     app.listen(config.port as number, config.host, () => {
       console.log(`Server is running on ${config.host}:${config.port}`);

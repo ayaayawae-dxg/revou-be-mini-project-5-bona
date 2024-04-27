@@ -14,7 +14,7 @@ const create = async (req: Request, res: Response, next: NextFunction) => {
 
     const createOrderRequest = {
       ...req.body,
-      user_id: req.app.locals.user.id,
+      // user_id: req.app.locals.user.id,
     } as CreateOrderRequest;
     const createOrderResponse = await ordersService.create(connection, createOrderRequest);
 

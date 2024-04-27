@@ -8,7 +8,9 @@ const config = {
   db_password: process.env.DB_PASSWORD,
   db_name: process.env.DB_NAME,
 
-  jwt_secret: process.env.JWT_SECRET
+  jwt_secret: process.env.JWT_SECRET,
+
+  rabbitmq_host: process.env.RABBITMQ_HOST
 };
 
 export default config;
