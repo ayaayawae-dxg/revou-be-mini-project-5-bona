@@ -2,7 +2,7 @@ import { QueryResult, ResultSetHeader, RowDataPacket } from "mysql2";
 import { PoolConnection } from "mysql2/promise";
 
 import { createError } from "../../common/createError";
-import { CreateProductsRequest, CreateProductsResponse } from "./products.model";
+import { CreateProductsRequest, CreateProductsResponse, ProductAvailabilityRequest } from "./products.model";
 import { randomUUID } from "crypto";
 
 const create = async (connection: PoolConnection, createProductsRequest: CreateProductsRequest): Promise<CreateProductsResponse> => {
@@ -17,6 +17,34 @@ const create = async (connection: PoolConnection, createProductsRequest: CreateP
   return { id: rows.insertId };
 };
 
+const checkAvailability = async (connection: PoolConnection, productAvailabilityRequest: ProductAvailabilityRequest): Promise<boolean> => {
+  const { product_id, quantity } = productAvailabilityRequest;
+
+  const query = `
+    SELECT name, quantity 
+    FROM products 
+    WHERE id = ${product_id} AND quantity >= ${quantity};
+  `;
+  const [rows] = await connection.query<RowDataPacket[]>(query);
+
+  return rows.length > 0 ? true : false;
+};
+
+const reduceStock = async (connection: PoolConnection, productAvailabilityRequest: ProductAvailabilityRequest): Promise<boolean> => {
+  const { product_id, quantity } = productAvailabilityRequest;
+
+  const query = `
+    UPDATE products
+    SET quantity = quantity - ${quantity}
+    WHERE id = ${product_id}
+  `;
+  const [rows] = await connection.query<ResultSetHeader>(query);
+
+  return rows.affectedRows === 1 ? true : false;
+};
+
 export default {
-  create
+  create,
+  checkAvailability,
+  reduceStock
 };

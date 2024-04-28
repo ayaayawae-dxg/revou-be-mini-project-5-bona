@@ -6,9 +6,11 @@ let connection: Connection, channel: Channel;
 const connectRabbitQueue = async () => {
   connection = await connect(config.rabbitmq_host as string);
   channel = await connection.createChannel();
+  channel.prefetch(1);
 
   console.log(`RabbitMQ connected successfully`);
-  await channel.assertQueue("product-availability-requests");
+  await channel.assertQueue("product-availability-request");
+  await channel.assertQueue("product-reduce-stock-request");
 };
 
 export { connectRabbitQueue, connection, channel }

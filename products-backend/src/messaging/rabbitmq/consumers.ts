@@ -2,11 +2,8 @@ import { channel } from "./rabbitmqConnection"
 import productsConsumer from "../../domain/products/products.consumer"
 
 const consumers = () => {
-  try {
-    channel.consume("product-availability-requests", productsConsumer.productAvailabilityRequests)
-  } catch (error) {
-    console.log(error);
-  }
+  channel.consume("product-availability-request", productsConsumer.productAvailabilityRequest);
+  channel.consume("product-reduce-stock-request", productsConsumer.productReduceStockRequest);
 }
 
 export default consumers
