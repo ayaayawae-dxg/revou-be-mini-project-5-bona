@@ -6,8 +6,8 @@ import { CreateNotifications } from "./notifications.model";
 import notificationsRepository from "./notifications.repository";
 
 const notificationOrderCreate = async (data: ConsumeMessage | null) => {
+  const connection = await pool.getConnection();
   try {
-    const connection = await pool.getConnection();
 
     if (data) {
       const requestData = JSON.parse(
@@ -31,6 +31,8 @@ const notificationOrderCreate = async (data: ConsumeMessage | null) => {
     }
   } catch (error) {
     console.log(error);
+  } finally {
+    connection.release()
   }
 };
 

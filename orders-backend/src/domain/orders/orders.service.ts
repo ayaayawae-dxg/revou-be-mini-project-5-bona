@@ -24,7 +24,7 @@ const create = async (
 
   const productAvailability = await ordersConsumer.productAvailability(replyToQueue.queue)
   if (!productAvailability.available) {
-    return createError({ message: "Product is out of stock", status: 200 })
+    createError({ message: "Product is out of stock", status: 200 })
   }
 
   channel.sendToQueue(

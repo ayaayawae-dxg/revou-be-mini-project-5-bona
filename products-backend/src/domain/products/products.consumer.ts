@@ -6,9 +6,8 @@ import { ProductAvailabilityRequest, ProductReduceStockRequest } from "./product
 import productsRepository from "./products.repository";
 
 const productAvailabilityRequest = async (data: ConsumeMessage | null) => {
+  const connection = await pool.getConnection();
   try {
-    const connection = await pool.getConnection();
-
     if (data) {
       const requestData = JSON.parse(
         data.content.toString()
@@ -23,7 +22,7 @@ const productAvailabilityRequest = async (data: ConsumeMessage | null) => {
         product_id,
         available: isProductAvailable,
       });
-      
+
       channel.sendToQueue(
         data.properties.replyTo,
         Buffer.from(payload),
@@ -33,13 +32,14 @@ const productAvailabilityRequest = async (data: ConsumeMessage | null) => {
   } catch (error) {
     console.log(error);
     channel.reject(data as Message, false)
+  } finally {
+    connection.release()
   }
 };
 
 const productReduceStockRequest = async (data: ConsumeMessage | null) => {
+  const connection = await pool.getConnection();
   try {
-    const connection = await pool.getConnection();
-
     if (data) {
       const requestData = JSON.parse(
         data.content.toString()
@@ -58,6 +58,8 @@ const productReduceStockRequest = async (data: ConsumeMessage | null) => {
   } catch (error) {
     console.log(error);
     channel.reject(data as Message, false)
+  } finally {
+    connection.release()
   }
 };
 
