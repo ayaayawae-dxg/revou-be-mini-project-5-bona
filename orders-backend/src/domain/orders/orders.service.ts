@@ -30,10 +30,15 @@ const create = async (
   channel.sendToQueue(
     "product-reduce-stock-request",
     Buffer.from(JSON.stringify(createOrderRequest)),
-    { replyTo: replyToQueue.queue }
   );
 
   const orderId = await ordersRepository.create(connection, createOrderRequest);
+
+  // send notification
+  channel.sendToQueue(
+    "notification-order-create",
+    Buffer.from(JSON.stringify(createOrderRequest)),
+  );
 
   return orderId;
 };

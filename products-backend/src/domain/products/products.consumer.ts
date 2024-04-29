@@ -57,6 +57,7 @@ const productReduceStockRequest = async (data: ConsumeMessage | null) => {
     }
   } catch (error) {
     console.log(error);
+    channel.reject(data as Message, false)
   }
 };
 
