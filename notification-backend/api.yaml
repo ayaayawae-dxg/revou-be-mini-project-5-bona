@@ -9,7 +9,7 @@ servers:
         default: localhost:5002
         description: local
 tags:
-  - name: Products
+  - name: Notifications
 paths:
   /:
     get:
