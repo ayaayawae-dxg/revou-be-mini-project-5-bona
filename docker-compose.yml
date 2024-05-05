@@ -1,0 +1,90 @@
+version: "3.8"
+
+services:
+  mysqldb:
+    image: mysql
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=
+      - MYSQL_ALLOW_EMPTY_PASSWORD=1
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+    ports:
+      - 3306:3306
+    volumes:
+      - db:/var/lib/mysql
+      - ./seeder:/docker-entrypoint-initdb.d
+
+  rabbitmq:
+    image: rabbitmq:management
+    ports:
+        - 5672:5672
+        - 15672:15672
+    volumes:
+        - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+        - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+
+  app-products:
+    # Will run after mysqldb healthcheck = service_healthy
+    depends_on:
+      mysqldb:
+        condition: service_healthy
+    build: ./products-backend
+    restart: unless-stopped
+    env_file: ./products-backend/.env
+    ports:
+      - 5001:5001
+    environment:
+      - DB_HOST=mysqldb
+      - DB_USER=root
+      - DB_PASSWORD=
+      - DB_NAME=be-mini-project-5-products
+      - DB_PORT=3306
+      - RABBITMQ_HOST=amqp://rabbitmq:5672
+    stdin_open: true
+    tty: true
+
+  app-orders:
+    # Will run after mysqldb healthcheck = service_healthy
+    depends_on:
+      mysqldb:
+        condition: service_healthy
+    build: ./orders-backend
+    restart: unless-stopped
+    env_file: ./orders-backend/.env
+    ports:
+      - 5000:5000
+    environment:
+      - DB_HOST=mysqldb
+      - DB_USER=root
+      - DB_PASSWORD=
+      - DB_NAME=be-mini-project-5-orders
+      - DB_PORT=3306
+      - RABBITMQ_HOST=amqp://rabbitmq:5672
+    stdin_open: true
+    tty: true
+
+  app-notifications:
+    # Will run after mysqldb healthcheck = service_healthy
+    depends_on:
+      mysqldb:
+        condition: service_healthy
+    build: ./notification-backend
+    restart: unless-stopped
+    env_file: ./notification-backend/.env
+    ports:
+      - 5002:5002
+    environment:
+      - DB_HOST=mysqldb
+      - DB_USER=root
+      - DB_PASSWORD=
+      - DB_NAME=be-mini-project-5-notification
+      - DB_PORT=3306
+      - RABBITMQ_HOST=amqp://rabbitmq:5672
+    stdin_open: true
+    tty: true
+
+volumes:
+  db:
