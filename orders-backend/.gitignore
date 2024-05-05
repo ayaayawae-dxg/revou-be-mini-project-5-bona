@@ -11,4 +11,4 @@ package-lock.json
 /coverage
 
 # should add .env
-# .env 
+.env 
