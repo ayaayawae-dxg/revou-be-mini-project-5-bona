@@ -10,7 +10,7 @@ const home = async (req: Request, res: Response, next: NextFunction) => {
     await connection.beginTransaction();
 
     await successRes(connection, res, {
-      message: "Orders Microservices API",
+      message: "Products Microservices API",
       status: 200,
     });
   } catch (error) {
