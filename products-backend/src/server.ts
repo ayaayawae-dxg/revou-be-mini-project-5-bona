@@ -9,8 +9,11 @@ import log from "./middleware/log";
 import { errorRes } from "./common/response";
 import config from "./config/config";
 import { checkDb } from "./database/dbUtils";
+
 import { connectRabbitQueue } from "./messaging/rabbitmq/rabbitmqConnection";
-import consumers from "./messaging/rabbitmq/consumers";
+import { connectKafka } from "./messaging/kafka/kafkaConnection";
+import rabbitmqConsumers  from "./messaging/rabbitmq/consumers";
+import kafkaConsumers from "./messaging/kafka/consumers";
 
 const app = express();
 const apiSpec = path.join(__dirname, "../api.yaml");
@@ -36,7 +39,8 @@ app.use(errorRes);
 const start = async () => {
   try {
     await checkDb();
-    await connectRabbitQueue().then(consumers);
+    await connectRabbitQueue().then(rabbitmqConsumers);
+    await connectKafka().then(kafkaConsumers)
 
     app.listen(config.port as number, config.host, () => {
       console.log(`Products service is running on ${config.host}:${config.port}`);
