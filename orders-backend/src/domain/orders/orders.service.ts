@@ -8,39 +8,59 @@ import ordersRepository from "./orders.repository";
 import { channel, connection as rabbitmqConnection } from "../../messaging/rabbitmq/rabbitmqConnection";
 import ordersConsumer from "./orders.consumer";
 import { randomUUID } from "crypto";
+import { producer } from "../../messaging/kafka/kafkaConnection";
 
+// ========== RABBITMQ ==========
+// const create = async (
+//   connection: PoolConnection,
+//   createOrderRequest: CreateOrderRequest
+// ): Promise<CreateOrderResponse> => {
+//   const { user_id, product_id, quantity } = createOrderRequest;
+//   const replyToQueue = await channel.assertQueue('', { exclusive: true });
+
+//   channel.sendToQueue(
+//     "product-availability-request",
+//     Buffer.from(JSON.stringify(createOrderRequest)),
+//     { replyTo: replyToQueue.queue }
+//   );
+
+//   const productAvailability = await ordersConsumer.productAvailability(replyToQueue.queue)
+//   if (!productAvailability.available) {
+//     createError({ message: "Product is out of stock", status: 200 })
+//   }
+
+//   channel.sendToQueue(
+//     "product-reduce-stock-request",
+//     Buffer.from(JSON.stringify(createOrderRequest)),
+//   );
+
+//   const orderId = await ordersRepository.create(connection, createOrderRequest);
+
+//   // send notification
+//   channel.sendToQueue(
+//     "notification-order-create",
+//     Buffer.from(JSON.stringify(createOrderRequest)),
+//   );
+
+//   return orderId;
+// };
+
+
+// ========== KAFKA ==========
 const create = async (
   connection: PoolConnection,
   createOrderRequest: CreateOrderRequest
 ): Promise<CreateOrderResponse> => {
   const { user_id, product_id, quantity } = createOrderRequest;
-  const replyToQueue = await channel.assertQueue('', { exclusive: true });
 
-  channel.sendToQueue(
-    "product-availability-request",
-    Buffer.from(JSON.stringify(createOrderRequest)),
-    { replyTo: replyToQueue.queue }
-  );
+  await producer.send({
+    topic: 'dxg-digicamp-microservices-test',
+    messages: [
+      { value: Buffer.from(JSON.stringify({ from: "bona", type: "PRODUCT-REDUCE_STOCK", data: createOrderRequest })) },
+    ],
+  })
 
-  const productAvailability = await ordersConsumer.productAvailability(replyToQueue.queue)
-  if (!productAvailability.available) {
-    createError({ message: "Product is out of stock", status: 200 })
-  }
-
-  channel.sendToQueue(
-    "product-reduce-stock-request",
-    Buffer.from(JSON.stringify(createOrderRequest)),
-  );
-
-  const orderId = await ordersRepository.create(connection, createOrderRequest);
-
-  // send notification
-  channel.sendToQueue(
-    "notification-order-create",
-    Buffer.from(JSON.stringify(createOrderRequest)),
-  );
-
-  return orderId;
+  return { id: "asdasd" };
 };
 
 export default {

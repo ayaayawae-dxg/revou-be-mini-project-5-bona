@@ -1,4 +1,4 @@
-import { Consumer, Kafka } from "kafkajs";
+import { Consumer, Kafka, Producer } from "kafkajs";
 import config from "../../config/config";
 
 const kafka = new Kafka({
@@ -12,15 +12,15 @@ const kafka = new Kafka({
   },
 })
 
-let consumer: Consumer
+let consumer: Consumer, producer: Producer
 
 const connectKafka = async () => {
-  consumer = kafka.consumer({ groupId: "bona-group-products" })
+  producer = kafka.producer()
+  consumer = kafka.consumer({ groupId: "bona-group-orders" })
 
+  await producer.connect()
   await consumer.connect()
   console.log(`Kafka connected successfully`);
-
-  await consumer.subscribe({ topic: "dxg-digicamp-microservices-test", fromBeginning: true })
 }
 
-export { connectKafka, consumer }
+export { connectKafka, consumer, producer }
