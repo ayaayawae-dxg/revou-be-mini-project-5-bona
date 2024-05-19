@@ -2,15 +2,20 @@ const config = {
   host: process.env.HOST || "0.0.0.0",
   port: process.env.HOST_PORT || 5002,
 
-  db_host: process.env.DB_HOST,
-  db_port: process.env.DB_PORT,
-  db_user: process.env.DB_USER,
-  db_password: process.env.DB_PASSWORD,
-  db_name: process.env.DB_NAME,
+  db_host: process.env.DB_HOST || "127.0.0.1",
+  db_port: process.env.DB_PORT || 3306,
+  db_user: process.env.DB_USER || "root",
+  db_password: process.env.DB_PASSWORD || "",
+  db_name: process.env.DB_NAME || "",
 
-  jwt_secret: process.env.JWT_SECRET,
+  jwt_secret: process.env.JWT_SECRET || "",
 
-  rabbitmq_host: process.env.RABBITMQ_HOST
+  rabbitmq_host: process.env.RABBITMQ_HOST || "",
+  
+  kafka_key: process.env.KAFKA_KEY || "",
+  kafka_secret: process.env.KAFKA_SECRET || "",
+  kafka_resource: process.env.KAFKA_RESOURCE || "",
+  kafka_server: process.env.KAFKA_SERVER || "",
 };
 
 export default config;
