@@ -7,5 +7,6 @@ const router = Router();
 
 // router.post("/", auth, ordersController.create);
 router.post("/", ordersController.create);
+router.post("/kafka", ordersController.create);
 
 export default router;
