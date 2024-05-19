@@ -16,7 +16,7 @@ const consumers = async () => {
         if (from && from === "bona") {
           switch (type) {
             case "PRODUCT-REDUCE_STOCK":
-              productsConsumer.productReduceStockRequest(data);
+              productsConsumer.kafkaProductReduceStockRequest(data);
               break;
             default:
               break;

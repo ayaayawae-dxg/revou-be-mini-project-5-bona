@@ -19,11 +19,11 @@ const create = async (connection: PoolConnection, createProductsRequest: CreateP
 
 const checkAvailability = async (connection: PoolConnection, productAvailabilityRequest: ProductAvailabilityRequest): Promise<boolean> => {
   const { product_id, quantity } = productAvailabilityRequest;
-
+  
   const query = `
     SELECT name, quantity 
     FROM products 
-    WHERE id = ${product_id} AND quantity >= ${quantity};
+    WHERE id = ${product_id} AND quantity >= ${quantity} FOR UPDATE;
   `;
   const [rows] = await connection.query<RowDataPacket[]>(query);
 
@@ -32,8 +32,19 @@ const checkAvailability = async (connection: PoolConnection, productAvailability
 
 const reduceStock = async (connection: PoolConnection, productAvailabilityRequest: ProductAvailabilityRequest): Promise<boolean> => {
   const { product_id, quantity } = productAvailabilityRequest;
+  let query
 
-  const query = `
+  query = `
+    SELECT name, quantity 
+    FROM products 
+    WHERE id = ${product_id} FOR UPDATE
+  `
+  const lockResponse = await connection.query<RowDataPacket[]>(query);
+  if (lockResponse[0].length === 0) {
+    return false
+  }
+
+  query = `
     UPDATE products
     SET quantity = quantity - ${quantity}
     WHERE id = ${product_id}

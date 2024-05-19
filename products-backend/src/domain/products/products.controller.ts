@@ -4,7 +4,7 @@ import pool from "../../config/db";
 import { successRes } from "../../common/response";
 import { createNextError } from "../../common/createError";
 
-import { CreateProductsRequest } from "./products.model";
+import { ProductAvailabilityRequest, CreateProductsRequest } from "./products.model";
 import productsService from "./products.service";
 
 const create = async (req: Request, res: Response, next: NextFunction) => {
@@ -27,6 +27,23 @@ const create = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
+const checkAvailability = async (req: Request, res: Response, next: NextFunction) => {
+  const connection = await pool.getConnection();
+  try {
+    const checkAvailabilityProductsRequest = req.query as unknown as ProductAvailabilityRequest
+    const checkAvailabilityProductsResponse = await productsService.checkAvailability(connection, checkAvailabilityProductsRequest);
+
+    await successRes(connection, res, {
+      message: "check availability products successfully",
+      status: 200,
+      data: checkAvailabilityProductsResponse,
+    });
+  } catch (error) {
+    await createNextError(connection, () => next(error));
+  }
+};
+
 export default {
-  create
+  create,
+  checkAvailability
 };
