@@ -16,6 +16,8 @@ const config = {
   kafka_secret: process.env.KAFKA_SECRET || "",
   kafka_resource: process.env.KAFKA_RESOURCE || "",
   kafka_server: process.env.KAFKA_SERVER || "",
+
+  url_product_services: process.env.URL_PRODUCT_SERVICES || "http://localhost:5001"
 };
 
 export default config;

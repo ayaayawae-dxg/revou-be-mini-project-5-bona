@@ -1,8 +1,9 @@
 import axios from "axios";
+import config from "../config/config";
 
 const checkProductAvailability = async (product_id: number, quantity: number) => {
   const res = await axios
-    .get("http://localhost:5001/products/check-availability", {
+    .get(`${config.url_product_services}/products/check-availability`, {
       params: { product_id, quantity },
     })
     .then((res) => res.data)
