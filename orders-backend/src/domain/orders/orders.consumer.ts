@@ -1,6 +1,6 @@
 import { ConsumeMessage } from "amqplib";
 
-import pool from "../../config/db";
+import pool from "../../config/database";
 import { channel } from "../../messaging/rabbitmq/rabbitmqConnection";
 import { ProductAvailability } from "./orders.model";
 

@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 
 import { successRes } from "../../common/response";
-import pool from "../../config/db";
+import pool from "../../config/database";
 import { onError } from "../../common/createError";
 
 const home = async (req: Request, res: Response, next: NextFunction) => {

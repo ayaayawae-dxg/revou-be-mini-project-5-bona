@@ -1,5 +1,5 @@
 import { RowDataPacket } from "mysql2";
-import pool from "../config/db";
+import pool from "../config/database";
 
 const checkDb = async () => {
   const [rows] = await pool.query<RowDataPacket[]>("select @@version");

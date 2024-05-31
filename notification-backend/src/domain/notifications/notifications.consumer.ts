@@ -1,6 +1,6 @@
 import { ConsumeMessage, Message } from "amqplib";
 
-import pool from "../../config/db";
+import pool from "../../config/database";
 import { channel } from "../../messaging/rabbitmq/rabbitmqConnection";
 import { CreateNotifications } from "./notifications.model";
 import notificationsRepository from "./notifications.repository";
