@@ -1,5 +1,6 @@
 import { Consumer, Kafka, Producer } from "kafkajs";
 import config from "../../config/config";
+import kafkaConsumersListeners from "./consumers";
 
 const kafka = new Kafka({
   clientId: config.kafka_resource,
@@ -15,12 +16,18 @@ const kafka = new Kafka({
 let consumer: Consumer, producer: Producer
 
 const connectKafka = async () => {
-  producer = kafka.producer()
-  consumer = kafka.consumer({ groupId: "bona-group-orders" })
+  try {
+    producer = kafka.producer()
+    consumer = kafka.consumer({ groupId: "bona-group-orders" })
 
-  await producer.connect()
-  await consumer.connect()
-  console.log(`Kafka connected successfully`);
+    await producer.connect()
+    await consumer.connect()
+    await kafkaConsumersListeners()
+    
+    console.log(`Kafka connected successfully`);
+  } catch (error) {
+    console.log("Kafka failed to connect", error);
+  }
 }
 
 export { connectKafka, consumer, producer }

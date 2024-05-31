@@ -1,5 +1,6 @@
 import { Consumer, Kafka } from "kafkajs";
 import config from "../../config/config";
+import kafkaConsumersListeners from "./consumers";
 
 const kafka = new Kafka({
   clientId: config.kafka_resource,
@@ -15,12 +16,18 @@ const kafka = new Kafka({
 let consumer: Consumer
 
 const connectKafka = async () => {
-  consumer = kafka.consumer({ groupId: "bona-group-products" })
+  try {
+    consumer = kafka.consumer({ groupId: "bona-group-products" })
 
-  await consumer.connect()
-  console.log(`Kafka connected successfully`);
+    await consumer.connect()
+    await consumer.subscribe({ topic: "dxg-digicamp-microservices-test", fromBeginning: true })
+    await kafkaConsumersListeners()
 
-  await consumer.subscribe({ topic: "dxg-digicamp-microservices-test", fromBeginning: true })
+    console.log(`Kafka connected successfully`);
+  } catch (error) {
+    console.log("Kafka failed to connect", error);
+  }
+
 }
 
 export { connectKafka, consumer }

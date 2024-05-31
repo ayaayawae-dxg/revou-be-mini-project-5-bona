@@ -12,7 +12,6 @@ import { checkDb } from "./database/dbUtils";
 
 import { connectQueue } from "./messaging/rabbitmq/rabbitmqConnection";
 import { connectKafka } from "./messaging/kafka/kafkaConnection";
-import kafkaConsumers from "./messaging/kafka/consumers";
 
 const app = express();
 const apiSpec = path.join(__dirname, "../api.yaml");
@@ -39,8 +38,8 @@ const start = async () => {
   try {
     await checkDb();
     await connectQueue();
-    await connectKafka().then(kafkaConsumers)
-
+    await connectKafka();
+    
     app.listen(config.port as number, config.host, () => {
       console.log(`Orders service is running on ${config.host}:${config.port}`);
     });

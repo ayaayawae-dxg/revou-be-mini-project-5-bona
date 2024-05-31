@@ -1,5 +1,6 @@
 import { Consumer, Kafka, Producer } from "kafkajs";
 import config from "../../config/config";
+import kafkaConsumersListeners from "./consumers";
 
 const kafka = new Kafka({
   clientId: config.kafka_resource,
@@ -15,14 +16,20 @@ const kafka = new Kafka({
 let consumer: Consumer, producer: Producer
 
 const connectKafka = async () => {
-  producer = kafka.producer()
-  consumer = kafka.consumer({ groupId: "bona-group-notifications" })
+  try {
+    producer = kafka.producer()
+    consumer = kafka.consumer({ groupId: "bona-group-notifications" })
 
-  await producer.connect()
-  await consumer.connect()
-  console.log(`Kafka connected successfully`);
-  
-  await consumer.subscribe({ topic: "dxg-digicamp-microservices-test", fromBeginning: true })
+    await producer.connect()
+    await consumer.connect()
+
+    await consumer.subscribe({ topic: "dxg-digicamp-microservices-test", fromBeginning: true })
+    await kafkaConsumersListeners()
+    
+    console.log(`Kafka connected successfully`);
+  } catch (error) {
+    console.log("Kafka failed to connect", error);
+  }
 }
 
 export { connectKafka, consumer, producer }
