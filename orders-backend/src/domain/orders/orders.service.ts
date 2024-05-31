@@ -19,7 +19,6 @@ const create = async (
   connection: PoolConnection,
   createOrderRequest: CreateOrderRequest
 ): Promise<CreateOrderResponse> => {
-  const { user_id, product_id, quantity } = createOrderRequest;
   const replyToQueue = await channel.assertQueue("", { exclusive: true });
 
   channel.sendToQueue(
@@ -40,7 +39,6 @@ const create = async (
     Buffer.from(JSON.stringify(createOrderRequest))
   );
   
-  // send notification
   channel.sendToQueue(
     "notification-order-create",
     Buffer.from(JSON.stringify(createOrderRequest))
