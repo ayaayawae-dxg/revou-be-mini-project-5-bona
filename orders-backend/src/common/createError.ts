@@ -21,7 +21,7 @@ export const createError = ({ message, status }: createErrorProp) => {
   throw error;
 };
 
-export const createNextError = async (
+export const onError = async (
   connection: PoolConnection,
   callback: () => void
 ) => {

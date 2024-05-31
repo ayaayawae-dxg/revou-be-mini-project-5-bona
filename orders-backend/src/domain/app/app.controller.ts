@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 
 import { successRes } from "../../common/response";
 import pool from "../../config/db";
-import { createNextError } from "../../common/createError";
+import { onError } from "../../common/createError";
 
 const home = async (req: Request, res: Response, next: NextFunction) => {
   const connection = await pool.getConnection();
@@ -14,7 +14,7 @@ const home = async (req: Request, res: Response, next: NextFunction) => {
       status: 200,
     });
   } catch (error) {
-    await createNextError(connection, () => next(error))
+    await onError(connection, () => next(error))
   }
 };
 

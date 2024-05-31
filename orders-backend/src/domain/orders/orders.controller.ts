@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 
 import pool from "../../config/db";
 import { successRes } from "../../common/response";
-import { createNextError } from "../../common/createError";
+import { onError } from "../../common/createError";
 
 import { CreateOrderRequest } from "./orders.model";
 import ordersService from "./orders.service";
@@ -27,7 +27,7 @@ const create = async (req: Request, res: Response, next: NextFunction) => {
       data: createOrderResponse,
     });
   } catch (error) {
-    await createNextError(connection, () => next(error));
+    await onError(connection, () => next(error));
   }
 };
 
